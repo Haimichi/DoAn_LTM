@@ -38,7 +38,6 @@ public class frmPort_IP extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Kết nối Server");
-        setPreferredSize(new java.awt.Dimension(360, 450));
         setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -47,8 +46,6 @@ public class frmPort_IP extends javax.swing.JFrame {
         jLabel2.setText("PORT :");
 
         jLabel3.setText("IP :");
-
-        txtIP.setText("127.0.0.1");
 
         jLabel4.setText("Bạn có muốn lưu lại Port & IP cho lần sau?");
 
