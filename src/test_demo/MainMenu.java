@@ -59,6 +59,11 @@ public class MainMenu extends javax.swing.JFrame {
         jMenu2.setText("Dịch");
 
         jMenuItem1.setText("Anh - Việt");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem1);
 
         jMenuItem2.setText("Nhật - Việt");
@@ -93,6 +98,12 @@ public class MainMenu extends javax.swing.JFrame {
         traCuuForm.setLocationRelativeTo(null);
         traCuuForm.setVisible(true);  
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        frmDichVanBan dichForm = new frmDichVanBan();
+        dichForm.setLocationRelativeTo(null);
+        dichForm.setVisible(true);  
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
