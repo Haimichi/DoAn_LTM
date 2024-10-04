@@ -1,10 +1,16 @@
 package test_demo;
 
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,6 +25,26 @@ public class frmTraCuuTuDien extends javax.swing.JFrame {
      */
     public frmTraCuuTuDien() {
         initComponents();
+        // Thiết lập cho tAreaNgonNgu  
+        tAreaNgonNgu.setLineWrap(true); // Bật tự động xuống dòng  
+        tAreaNgonNgu.setWrapStyleWord(true); // Xuống dòng tại từ  
+
+        // Thiết lập cho tAreaTuDich  
+        tAreaTuDich.setLineWrap(true); // Bật tự động xuống dòng  
+        tAreaTuDich.setWrapStyleWord(true); // Xuống dòng tại từ
+
+        // Thiết lập khoảng cách dòng
+        StyledDocument docNgonNgu = new DefaultStyledDocument();  
+        StyledDocument docTuDich = new DefaultStyledDocument();  
+        tAreaNgonNgu.setDocument(docNgonNgu);  
+        tAreaTuDich.setDocument(docTuDich);  
+    
+        Style style = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);  
+        style.addAttribute(StyleConstants.LineSpacing, 10.0f); // Điều chỉnh khoảng cách dòng (10.0f là ví dụ)  
+    
+        // Thiết lập font cho JTextPane  
+        tAreaNgonNgu.setFont(new Font("Monospaced", Font.PLAIN, 14)); // Kích thước font  
+        tAreaTuDich.setFont(new Font("Monospaced", Font.PLAIN, 14)); // Kích thước font
     }
 
     @SuppressWarnings("unchecked")
@@ -138,8 +164,6 @@ public class frmTraCuuTuDien extends javax.swing.JFrame {
     }
     
     private boolean isWordInLanguage(String word, String language) {
-        // Bạn có thể viết logic để kiểm tra xem từ có phải thuộc ngôn ngữ đó không
-        // Đây là ví dụ đơn giản chỉ kiểm tra kích thước từ, bạn có thể mở rộng hoặc cải thiện.
         if (language.equals("vi")) {
             return word.matches("[\\u0102\\u00C1\\u00C0\\u00C3\\u0103\\u00E1\\u00E0\\u00E3\\u00E2\\u00EA\\u00E9\\u00EA]+"); // kiểm tra nếu từ chỉ chứa chữ cái tiếng Việt
         } else {
@@ -148,42 +172,60 @@ public class frmTraCuuTuDien extends javax.swing.JFrame {
         }
     }
     
-        private String lookupWord(String word, String language) {
-        try {
-            String urlStr = "https://api.dictionaryapi.dev/api/v2/entries/"
-                    + language + "/" + word.toLowerCase();
-            URL url = new URL(urlStr);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
+    private String lookupWord(String word, String language) {  
+        try {  
+            String urlStr = "https://api.dictionaryapi.dev/api/v2/entries/"  
+                    + language + "/" + word.toLowerCase();  
+            URL url = new URL(urlStr);  
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();  
+            conn.setRequestMethod("GET");  
+            conn.connect();  
 
-            int responseCode = conn.getResponseCode();
-            if (responseCode != 200) {
-                return "Không tìm thấy nghĩa của từ.";
-            }
+            int responseCode = conn.getResponseCode();  
+            if (responseCode != 200) {  
+                return "Không tìm thấy nghĩa của từ.";  
+            }  
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            in.close();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));  
+            String inputLine;  
+            StringBuilder content = new StringBuilder();  
+            while ((inputLine = in.readLine()) != null) {  
+                content.append(inputLine);  
+            }  
+            in.close();  
 
-            JSONArray jsonArray = new JSONArray(content.toString());
-            String meaning = jsonArray.getJSONObject(0)
-                    .getJSONArray("meanings")
-                    .getJSONObject(0)
-                    .getJSONArray("definitions")
-                    .getJSONObject(0)
-                    .getString("definition");
+            // Đọc và xử lý JSON để lấy nghĩa và các thông tin khác  
+            JSONArray jsonArray = new JSONArray(content.toString());  
+            StringBuilder meanings = new StringBuilder();  
 
-            return meaning;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Có lỗi xảy ra khi tra cứu từ.";
-        }
-}
+            // Duyệt qua các kết quả trả về từ API  
+            for (int i = 0; i < jsonArray.length(); i++) {  
+                JSONObject wordObject = jsonArray.getJSONObject(i);  
+                meanings.append("Từ: ").append(wordObject.getString("word")).append("\n");  
+
+                // Xử lý các nghĩa  
+                JSONArray meaningsArray = wordObject.getJSONArray("meanings");  
+                for (int j = 0; j < meaningsArray.length(); j++) {  
+                    JSONObject meaningObject = meaningsArray.getJSONObject(j);  
+                    meanings.append("Loại từ: ").append(meaningObject.getString("partOfSpeech")).append("\n");  
+                    JSONArray definitionsArray = meaningObject.getJSONArray("definitions");  
+                    for (int k = 0; k < definitionsArray.length(); k++) {  
+                        JSONObject definitionObject = definitionsArray.getJSONObject(k);  
+                        meanings.append("Định nghĩa: ").append(definitionObject.getString("definition")).append("\n");  
+                        if (definitionObject.has("example")) {  
+                            meanings.append("Ví dụ: ").append(definitionObject.getString("example")).append("\n");  
+                        }  
+                    }  
+                    meanings.append("\n");  
+                }  
+            }  
+
+            return meanings.toString(); // Trả về toàn bộ nghĩa và thông tin khác  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+            return "Có lỗi xảy ra khi tra cứu từ.";  
+        }  
+    }  
 
     
     /**

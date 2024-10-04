@@ -44,6 +44,11 @@ public class MainMenu extends javax.swing.JFrame {
         jMenu1.setText("Tra cứu từ điển");
 
         jMenuItem3.setText("Anh - Việt");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem3);
 
         jMenuItem4.setText("Nhật - Việt");
@@ -82,6 +87,12 @@ public class MainMenu extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        frmTraCuuTuDien traCuuForm = new frmTraCuuTuDien();
+        traCuuForm.setLocationRelativeTo(null);
+        traCuuForm.setVisible(true);  
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments
