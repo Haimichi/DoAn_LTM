@@ -158,15 +158,14 @@
     <Component class="javax.swing.JComboBox" name="cmbNgonNguNhap">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="8">
+          <StringArray count="7">
             <StringItem index="0" value="Ti&#x1ebf;ng Vi&#x1ec7;t"/>
             <StringItem index="1" value="Ti&#x1ebf;ng Anh"/>
             <StringItem index="2" value="Ti&#x1ebf;ng T&#xe2;y Ban Nha"/>
             <StringItem index="3" value="Ti&#x1ebf;ng Ph&#xe1;p"/>
             <StringItem index="4" value="Ti&#x1ebf;ng &#xdd;"/>
             <StringItem index="5" value="Ti&#x1ebf;ng Nh&#x1ead;t"/>
-            <StringItem index="6" value="Ti&#x1ebf;ng Trung Ph&#x1ed3;n Th&#x1ec3;"/>
-            <StringItem index="7" value="Ti&#x1ebf;ng Trung Gi&#x1ea3;n Th&#x1ec3; "/>
+            <StringItem index="6" value="Ti&#x1ebf;ng &#x110;&#x1ee9;c"/>
           </StringArray>
         </Property>
       </Properties>
@@ -177,15 +176,14 @@
     <Component class="javax.swing.JComboBox" name="cmbNgonNguMuonDich">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="8">
+          <StringArray count="7">
             <StringItem index="0" value="Ti&#x1ebf;ng Anh"/>
             <StringItem index="1" value="Ti&#x1ebf;ng T&#xe2;y Ban Nha"/>
             <StringItem index="2" value="Ti&#x1ebf;ng Ph&#xe1;p"/>
             <StringItem index="3" value="Ti&#x1ebf;ng &#xdd;"/>
             <StringItem index="4" value="Ti&#x1ebf;ng Nh&#x1ead;t"/>
-            <StringItem index="5" value="Ti&#x1ebf;ng Vi&#x1ec7;t"/>
-            <StringItem index="6" value="Ti&#x1ebf;ng Trung Ph&#x1ed3;n Th&#x1ec3;"/>
-            <StringItem index="7" value="Ti&#x1ebf;ng Trung Gi&#x1ea3;n Th&#x1ec3; "/>
+            <StringItem index="5" value="Ti&#x1ebf;ng &#x110;&#x1ee9;c"/>
+            <StringItem index="6" value="Ti&#x1ebf;ng Vi&#x1ec7;t"/>
           </StringArray>
         </Property>
       </Properties>

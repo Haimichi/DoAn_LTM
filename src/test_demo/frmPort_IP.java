@@ -2,11 +2,9 @@ package test_demo;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.*;
 import java.sql.*;
 import java.io.*;
 import java.net.*;
-import java.util.regex.Pattern;
 /**
  *
  * @author ad
@@ -17,7 +15,6 @@ public class frmPort_IP extends javax.swing.JFrame {
     public frmPort_IP() {
         initComponents();
         loadSavedConnections();
-        
     }
     
     @SuppressWarnings("unchecked")
@@ -150,8 +147,6 @@ public class frmPort_IP extends javax.swing.JFrame {
             // Attempt to connect to the TCP server
             Socket socket = new Socket(ip, portNumber); 
             System.out.println("Connected to the server at " + ip + ":" + portNumber);
-            // If you want to keep the connection open, do not close the socket here.
-            socket.close(); // Close the socket if you are just testing the connection
             return true; // Connection successful
         } catch (SocketException se) {
             System.err.println("SocketException: " + se.getMessage());
@@ -200,22 +195,27 @@ public class frmPort_IP extends javax.swing.JFrame {
         String ip = txtIP.getText().trim();
         String port = txtPort.getText().trim();
 
-        // Validate IP and Port inputs
         if (ip.isEmpty() || port.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter both IP address and Port.", "Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Attempt to connect to the TCP Server
-        if (connectToServer(ip, port)) {
+        try {
+            // Tạo một kết nối socket tới server
+            Socket socket = new Socket(ip, Integer.parseInt(port)); // Khởi tạo socket kết nối với server
+            System.out.println("Kết nối thành công tới server tại IP: " + ip + ", Port: " + port);
+
             if (cbOk.isSelected()) {
-                saveConnection(ip, port); // Save IP and Port to the database
+                saveConnection(ip, port); // Lưu lại IP và Port nếu cần
             }
-            // Proceed to formLogin after a successful connection
-            new Login(ip, port).setVisible(true);
-            this.dispose(); // Close current form
-        } else {
-            JOptionPane.showMessageDialog(this, "Connection failed. Please check IP and Port.", "Connection Error", JOptionPane.ERROR_MESSAGE);
+
+            // Truyền socket đã kết nối sang form Login
+            Login loginForm = new Login(socket); // Tạo Login với socket
+            loginForm.setVisible(true); // Hiển thị form Login
+            this.dispose(); // Đóng form hiện tại
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Kết nối thất bại: " + e.getMessage(), "Connection Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnKetNoiActionPerformed
     
@@ -260,7 +260,16 @@ public class frmPort_IP extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(frmPort_IP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        try {  
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {  
+                if ("Nimbus".equals(info.getName())) {  
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());  
+                    break;  
+                }  
+            }  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        } 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

@@ -8,21 +8,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import javax.swing.JOptionPane;
-import java.sql.SQLException; // Thêm dòng này
 
 /**
  *
  * @author ad
  */
 public class Login extends javax.swing.JFrame {
+    private Socket socket;
 
-    public Login(String ip, String port) {
-        initComponents();
+    public Login(Socket socket) {
+        this.socket = socket; // Gán socket đã được truyền vào
+        initComponents(); // Khởi tạo giao diện
+        if (this.socket == null) {
+            System.out.println("Socket is null in Login form.");
+        } else {
+            //System.out.println("Socket has been passed to Login form successfully.");
+        }
     }
 
     Login() {
@@ -122,33 +125,49 @@ public class Login extends javax.swing.JFrame {
     private void btnDangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangNhapActionPerformed
         String username = txtTaiKhoan.getText().trim();
         String password = new String(txtMatKhau.getPassword()).trim();
-        
+
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập tên đăng nhập và mật khẩu!");
             return;
         }
-        verifyLogin(username, password);
+        verifyLogin(username, password); // Gọi phương thức đăng nhập
     }//GEN-LAST:event_btnDangNhapActionPerformed
 
-        private void verifyLogin(String username, String password) {
-        try {
-            SQLServerConnection dbConnection = new SQLServerConnection();
-            boolean isAuthenticated = dbConnection.authenticateUser(username, password);
-
-            if (isAuthenticated) {
-                JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
-                // Open the main application form or perform further actions
-                this.dispose(); // Close current form
-                MainMenu mainMenu = new MainMenu();
-                mainMenu.setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không hợp lệ.", "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
+    private void verifyLogin(String username, String password) {
+            if (socket == null) {
+                System.out.println("Socket is null!");
+                return;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            try {
+                // Sử dụng socket để giao tiếp với server
+                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                // Gửi lệnh LOGIN và thông tin người dùng tới server
+                writer.println("LOGIN");
+                writer.println(username);  // Gửi tên đăng nhập
+                writer.println(password);  // Gửi mật khẩu
+
+                // Nhận phản hồi từ server
+                String response = reader.readLine();
+                System.out.println("Response from server: " + response);  // In ra phản hồi từ server để kiểm tra
+
+                // Kiểm tra phản hồi từ server
+                if ("Đăng nhập thành công".equals(response)) {
+                    JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
+                    // Tạo và hiển thị form MainMenu, truyền Socket và username vào MainMenu
+                    MainMenu mainMenu = new MainMenu(socket, username);
+                    mainMenu.setVisible(true);
+                    this.dispose();  // Đóng form đăng nhập
+                } else {
+                    JOptionPane.showMessageDialog(this, response, "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi kết nối: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         }
-    }
+
     
     /**
      * @param args the command line arguments
@@ -179,7 +198,13 @@ public class Login extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-            new Login("127.0.0.1", "8000").setVisible(true); // Thông số IP/Port giả lập
+                try {
+                    // Giả lập kết nối tới server
+                    Socket socket = new Socket("127.0.0.1", 8000); // Tạo một socket tạm thời cho ví dụ
+                    new Login(socket).setVisible(true); // Sử dụng constructor nhận socket
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

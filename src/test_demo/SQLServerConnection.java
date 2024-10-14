@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
-import java.security.Timestamp;
 
 /**
  *
@@ -19,8 +18,14 @@ import java.security.Timestamp;
     private static final String USER = "sa";  
     private static final String PASSWORD = "hai123@";
 
-        public static Connection getConnection() throws SQLException {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
+        public static Connection getConnection() throws SQLException {  
+            try {  
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); // Đăng ký driver  
+            } catch (ClassNotFoundException e) {  
+                e.printStackTrace();  
+                throw new SQLException("Driver not found");  
+            }  
+            return DriverManager.getConnection(URL, USER, PASSWORD);  
         }
 
         private String hashPassword(String password) {
@@ -57,35 +62,30 @@ import java.security.Timestamp;
             }
         }
 
-
-/**        public boolean authenticateUser(String username, String password) {
-            String query = "SELECT * FROM Users WHERE Username = ? AND PasswordHash = ?"; // Use correct column names
-
-            try (Connection conn = getConnection(); // Get connection
-                 PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, hashPassword(password)); // Hash the password
-
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                return resultSet.next(); // Returns true if user is found
-            } catch (SQLException e) {
-                e.printStackTrace(); // Print exception for debugging
-                return false; // Return false if there's an error
-            }
-        }**/
         public boolean authenticateUser(String username, String password) throws SQLException {
-            String query = "SELECT * FROM Users WHERE Username = ? AND PasswordHash = ?";
+            String query = "SELECT PasswordHash FROM Users WHERE Username = ?";
             try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, hashPassword(password)); // Hash the password
+                preparedStatement.setString(1, username);  // Kiểm tra tên người dùng
                 ResultSet resultSet = preparedStatement.executeQuery();
-                return resultSet.next(); // Returns true if user is found
-            }
-}
 
-        
+                // Kiểm tra nếu tài khoản không tồn tại
+                if (!resultSet.next()) {
+                    return false;  // Tài khoản không tồn tại
+                }
+
+                // Lấy mật khẩu băm từ cơ sở dữ liệu
+                String storedPasswordHash = resultSet.getString("PasswordHash");
+
+                // Băm mật khẩu người dùng nhập và so sánh với mật khẩu đã lưu
+                String hashedInputPassword = hashPassword(password);
+
+                // So sánh mật khẩu đã băm
+                return storedPasswordHash.equals(hashedInputPassword);
+            }
+        }
+
+
+
             // Save connection details into the ports table
         public void saveConnection(String ip, String port) throws SQLException {
             String query = "INSERT INTO ports (ip, port) VALUES (?, ?)";
